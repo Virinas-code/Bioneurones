@@ -12,7 +12,7 @@ pygame-menu = "^4.2.8"
 
 [tool.poetry.dev-dependencies]
 pycodestyle = "^2.8.0"
-pylint = "^2.14.4"
+pylint = "^2.14.5"
 flake8 = "^4.0.1"
 black = "^22.6.0"
 ipython = "^8.4.0"
