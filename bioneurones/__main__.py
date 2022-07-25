@@ -5,8 +5,10 @@ Bioneurones Launcher.
 
 Starts Bioneurones.
 """
-from .gui import Window
+from . import shared_data
+from .gui.setup_screens import MenuManager
 
 
 if __name__ == "__main__":
-    Window()
+    print(dir(shared_data))
+    MenuManager().main_menu()

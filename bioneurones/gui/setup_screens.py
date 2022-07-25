@@ -16,9 +16,9 @@ import pygame_menu.font
 import pygame_menu.locals
 import pygame_menu.themes
 import pygame_menu.widgets
-from bioneurones.gui import settings
 
-from bioneurones.gui.settings import Settings
+from .. import shared_data
+from ..world import World
 
 
 class MenuManager:
@@ -26,11 +26,6 @@ class MenuManager:
 
     def __init__(
         self,
-        surface: pygame.Surface,
-        resolution: tuple[int, int],
-        core_reload: Callable[[], None],
-        core_new_world: Callable[[], None],
-        core_load_world: Callable[[str], None],
     ) -> None:
         """
         Initialize screens.
@@ -40,16 +35,11 @@ class MenuManager:
         :param resolution: Window size.
         :type resolution: tuple[int, int]
         """
-        self.core_reload: Callable[[], None] = core_reload
-        self.core_new_world: Callable[[], None] = core_new_world
-        self.core_load_world: Callable[[str], None] = core_load_world
-        self.surface: pygame.Surface = surface
         self.menu: pygame_menu.Menu = pygame_menu.Menu("", 1, 56)
         self.menu.disable()
-        self.settings: Settings = Settings()
         self.resolution: tuple[int, int] = (
-            self.settings.resolution_x,
-            self.settings.resolution_y,
+            shared_data.settings.resolution_x,
+            shared_data.settings.resolution_y,
         )
         self.theme: pygame_menu.themes.Theme = pygame_menu.themes.Theme(
             background_color=(34, 40, 44),
@@ -96,6 +86,15 @@ class MenuManager:
         """
         self.menu.disable()
 
+    def core_new_world(self) -> None:
+        """
+        Create a new world.
+
+        Function called in main menu.
+        """
+        self.disable()
+        shared_data.world = World.new_world()
+
     def main_menu(self):
         """
         Main menu.
@@ -105,15 +104,15 @@ class MenuManager:
         self.disable()
         self.menu = pygame_menu.Menu(
             "Bioneurones",
-            self.settings.resolution_x,
-            self.settings.resolution_y,
+            shared_data.settings.resolution_x,
+            shared_data.settings.resolution_y,
             theme=self.theme,
         )
         self.menu.add.button("New World", action=self.core_new_world)
         self.menu.add.button("Load World", action=self.load_screen)
         self.menu.add.button("Settings", action=self.settings_screen)
         self.menu.add.button("Quit", action=pygame_menu.events.EXIT)
-        self.menu.mainloop(self.surface)
+        self.menu.mainloop(shared_data.window.window)
 
     def load_screen(self):
         """
@@ -142,7 +141,7 @@ class MenuManager:
         self.menu.add.button("Interface", action=self.configure_ui)
         self.menu.add.button("Save", action=self.settings_leave)
         self.menu.add.button("Quit", action=pygame_menu.events.EXIT)
-        self.menu.mainloop(self.surface)
+        self.menu.mainloop(shared_data.window.window)
 
     def configure_ui(self) -> None:
         """
@@ -161,32 +160,32 @@ class MenuManager:
         )
         self.menu.add.text_input(
             "X Resolution: ",
-            default=self.settings.resolution_x,
+            default=shared_data.settings.resolution_x,
             input_type=pygame_menu.locals.INPUT_INT,
             onchange=lambda value: setattr(
-                self.settings, "resolution_x", value
+                shared_data.settings, "resolution_x", value
             ),
         )
         self.menu.add.color_input(
-            "Background Color",
-            color_type="hex",
-            default=self.settings.background_color,
+            "Background Color: ",
+            color_type="rgb",
+            default=shared_data.settings.background_color,
             onchange=lambda value: setattr(
-                self.settings, "background_color", value
+                shared_data.settings, "background_color", value
             ),
         )
         self.menu.add.none_widget()
         self.menu.add.text_input(
             "Y Resolution: ",
-            default=self.settings.resolution_y,
+            default=shared_data.settings.resolution_y,
             input_type=pygame_menu.locals.INPUT_INT,
             onchange=lambda value: setattr(
-                self.settings, "resolution_y", value
+                shared_data.settings, "resolution_y", value
             ),
         )
         self.menu.add.none_widget()
         self.menu.add.button("OK", action=self.settings_screen)
-        self.menu.mainloop(self.surface)
+        self.menu.mainloop(shared_data.window.window)
 
     def settings_leave(self) -> None:
         """
@@ -194,11 +193,11 @@ class MenuManager:
 
         Save parameters and reload window.
         """
-        print(f"{self.settings.resolution_x=}")
-        self.settings.save_settings()
-        self.core_reload()
+        print(f"{shared_data.settings.resolution_x=}")
+        shared_data.settings.save_settings()
+        shared_data.window.reload()
         self.resolution = (
-            self.settings.resolution_x,
-            self.settings.resolution_y,
+            shared_data.settings.resolution_x,
+            shared_data.settings.resolution_y,
         )
         self.main_menu()

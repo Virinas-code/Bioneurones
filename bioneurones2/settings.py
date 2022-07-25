@@ -1,13 +1,14 @@
-#!/usr/bin/env python6
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Bioneurones GUI Settings.
+Bioneurones.
 
-Getters and setters for settings.
+Settings storage.
 """
 import json
 import os
 import sys
+from typing import Any
 
 
 class Settings:
@@ -22,7 +23,9 @@ class Settings:
         """
         settings: dict[str, str] = self.load_settings()
         self.resolution_x = int(settings.get("resolutionX", 600))
+        """Window width."""
         self.resolution_y = int(settings.get("resolutionY", 600))
+        """Window height."""
         self.background_color: tuple[int, int, int] = tuple(
             (
                 int(color)
@@ -31,6 +34,7 @@ class Settings:
                 )
             )
         )
+        """World background color."""
         self.world_width: int = int(settings.get("worldWidth", 600))
         """World width for new worlds."""
         self.world_height: int = int(settings.get("worldHeight", 600))
@@ -85,3 +89,25 @@ class Settings:
             os.mkdir(path)
         with open(path + "config.json", "w", encoding="utf-8") as write_file:
             json.dump(exported_settings, write_file)
+
+    def get_variable(self, variable: str) -> Any:
+        """
+        Get a variable.
+
+        Used for multiprocessing.
+
+        :param str variable: The name of the variable to get.
+        :return Any: The value of the variable.
+        """
+        return getattr(self, variable)
+
+    def set_variable(self, variable: str, value: Any) -> None:
+        """
+        Set a varaible.
+
+        Used for multiprocessing.
+
+        :param str variable: The name of the variable to get.
+        :param Any value: The new value of the variable.
+        """
+        return setattr(self, variable, value)

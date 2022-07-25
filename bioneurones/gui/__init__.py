@@ -5,17 +5,14 @@ Bioneurones Main GUI.
 
 Main window object.
 """
-import json
 import os
-import sys
 
 import pygame
+from pygame.constants import NOFRAME
 import pygame.display
 import pygame.image
-from pygame_menu import Menu
 
-from .settings import Settings
-from .setup_screens import MenuManager
+from .. import shared_data
 
 
 class Window:
@@ -30,30 +27,15 @@ class Window:
         pygame.init()
         os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
         self.resolution: tuple[int, int] = (600, 600)
-        self.settings: Settings = Settings()
-        self.menus: MenuManager = MenuManager(
-            pygame.display.set_mode((600, 600)),
-            self.resolution,
-            self.core_reload,
-            self.core_new_world,
-            self.core_load_world,
-        )
-        self.window: pygame.Surface = self.make_window()
-        self.menus.main_menu()
+        self.window = self.make_window()
 
-    def core_reload(self):
+    def reload(self):
         """
         Reload window.
 
         Used into settings menus.
         """
         self.window = self.make_window()
-
-    def core_new_world():
-        return None
-
-    def core_load_world(filenames: str):
-        return None
 
     def make_window(self) -> pygame.Surface:
         """
@@ -64,9 +46,10 @@ class Window:
         """
         window: pygame.Surface = pygame.display.set_mode(
             (
-                self.menus.settings.resolution_x,
-                self.menus.settings.resolution_y,
-            )
+                shared_data.settings.resolution_x,
+                shared_data.settings.resolution_y,
+            ),
+            NOFRAME,
         )
         pygame.display.set_allow_screensaver(False)
         pygame.display.set_caption("Bioneurones", "Simple AI Life Simulation")
