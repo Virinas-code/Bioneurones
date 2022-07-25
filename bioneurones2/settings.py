@@ -8,7 +8,6 @@ Settings storage.
 import json
 import os
 import platform
-import sys
 from typing import Any
 
 
