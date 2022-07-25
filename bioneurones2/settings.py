@@ -7,6 +7,7 @@ Settings storage.
 """
 import json
 import os
+import platform
 import sys
 from typing import Any
 
@@ -48,11 +49,11 @@ class Settings:
         :rtype: dict[str, str]
         """
         path: str = "./"  # Default path is source (not recommended)
-        if sys.platform == "win32":
+        if platform.system() == "Windows":
             path = os.environ["AppData"] + "/Bioneurones/"
-        elif sys.platform in ("linux", "linux2"):
+        elif platform.system() == "Linux":
             path = "/home/" + os.getlogin() + "/.local/share/Bioneurones/"
-        if os.path.exists(path):
+        if os.path.isdir(path):
             with open(path + "config.json", encoding="utf-8") as file:
                 settings: dict[str, str] = json.load(file)
             return settings
@@ -81,11 +82,11 @@ class Settings:
             "worldHeight": str(self.world_height),
         }
         path: str = "./"  # Default path is source (not recommended)
-        if sys.platform == "win32":
+        if platform.system() == "Windows":
             path = os.environ["AppData"] + "/Bioneurones/"
-        elif sys.platform in ("linux", "linux2"):
+        elif platform.system() == "Linux":
             path = "/home/" + os.getlogin() + "/.local/share/Bioneurones/"
-        if not os.path.exists(path):
+        if not os.path.isdir(path):
             os.mkdir(path)
         with open(path + "config.json", "w", encoding="utf-8") as write_file:
             json.dump(exported_settings, write_file)
