@@ -29,9 +29,7 @@ class Settings:
         self.background_color: tuple[int, int, int] = tuple(
             (
                 int(color)
-                for color in settings.get("backgroundColor", "0,0,0").split(
-                    ","
-                )
+                for color in settings.get("backgroundColor", "0,0,0").split(",")
             )
         )
         """World background color."""
@@ -49,9 +47,9 @@ class Settings:
         """
         path: str = "./"  # Default path is source (not recommended)
         if platform.system() == "Windows":
-            path = os.environ["AppData"] + "/Bioneurones/"
+            path = os.environ["AppData"] + "/bioneurones/"
         elif platform.system() == "Linux":
-            path = "/home/" + os.getlogin() + "/.local/share/Bioneurones/"
+            path = "/home/" + os.getlogin() + "/.local/share/bioneurones/"
         if os.path.isdir(path):
             with open(path + "config.json", encoding="utf-8") as file:
                 settings: dict[str, str] = json.load(file)
@@ -82,9 +80,9 @@ class Settings:
         }
         path: str = "./"  # Default path is source (not recommended)
         if platform.system() == "Windows":
-            path = os.environ["AppData"] + "/Bioneurones/"
+            path = os.environ["AppData"] + "/bioneurones/"
         elif platform.system() == "Linux":
-            path = "/home/" + os.getlogin() + "/.local/share/Bioneurones/"
+            path = "/home/" + os.getlogin() + "/.local/share/bioneurones/"
         if not os.path.isdir(path):
             os.mkdir(path)
         with open(path + "config.json", "w", encoding="utf-8") as write_file:

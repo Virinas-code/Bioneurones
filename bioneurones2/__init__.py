@@ -6,10 +6,11 @@ Bioneurones.
 Simple AI life simulation.
 """
 from multiprocessing import Process
-from multiprocessing.managers import AutoProxy, BaseManager
+from multiprocessing.managers import BaseManager
 import time
 from typing import Callable
 
+from .ui import Display
 from .settings import Settings
 
 
@@ -25,13 +26,16 @@ class Bioneurones:
         :param str version: Current version.
         """
         BaseManager.register("Settings", Settings)
+        BaseManager.register("Display", Display)
         self.manager: BaseManager = BaseManager()
-        self.settings: Callable = self.manager.Settings()  # type: ignore
+        self.manager.start()
+        self.settings_var: Callable = self.manager.Settings()  # type: ignore
+        self.display_var: Callable = self.manager.Display()  # type: ignore
         self.display_process: Process = Process(
-            target=self.display, args=[self.settings]
+            target=self.display, args=[self.settings_var]
         )
         self.world_process: Process = Process(
-            target=self.world, args=[self.settings]
+            target=self.world, args=[self.settings_var]
         )
 
     def display(self, settings: Settings) -> None:
@@ -64,9 +68,10 @@ class Bioneurones:
 
         Starts the game.
         """
-        with self.manager:
-            self.display_process.start()
-            self.world_process.start()
-            self.display_process.join()
-            self.world_process.join()
-            self.settings.save_settings()  # type: ignore # Shared variable
+        self.display_process.start()
+        self.world_process.start()
+        self.display_process.join()
+        self.world_process.join()
+        self.settings_var.save_settings()  # type: ignore # Shared variable
+        self.display_var.quit()
+        self.manager.shutdown()
