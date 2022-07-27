@@ -10,8 +10,7 @@ from multiprocessing.managers import BaseManager
 import time
 from typing import Callable
 
-from .ui.display
-import Display
+from .ui.display import Display
 from .settings import Settings
 
 
