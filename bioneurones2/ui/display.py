@@ -21,10 +21,7 @@ class Display:
         """
         os.environ["SDL_VIDEO_CENTERED"] = "1"
         pygame.display.init()
-        self.window: pygame.Surface = pygame.display.set_mode(
-            (400, 150),
-            pygame.constants.NOFRAME,
-        )  # type: ignore
+        self.window: pygame.Surface = self.make_main_window((600, 600))
         self.setup()
 
     def setup(self) -> None:
@@ -49,14 +46,16 @@ class Display:
         icon: pygame.Surface = pygame.image.load(path).convert()
         pygame.display.set_icon(icon)
 
-    def make_main_window(self, size: tuple[int, int]) -> None:
+    def make_main_window(self, size: tuple[int, int]) -> pygame.Surface:
         """
         Create main window.
 
         :param tuple[int, int] size: Windows size.
+        :return pygame.Surface: Window surface.
         """
-        self.window = pygame.display.set_mode(size)
+        window = pygame.display.set_mode(size)
         self.setup()
+        return window
 
     def get(self) -> pygame.Surface:
         """

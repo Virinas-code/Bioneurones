@@ -10,7 +10,8 @@ from multiprocessing.managers import BaseManager
 import time
 from typing import Callable
 
-from .ui import Display
+from .ui.display
+import Display
 from .settings import Settings
 
 
@@ -26,19 +27,18 @@ class Bioneurones:
         :param str version: Current version.
         """
         BaseManager.register("Settings", Settings)
-        BaseManager.register("Display", Display)
         self.manager: BaseManager = BaseManager()
         self.manager.start()
         self.settings_var: Callable = self.manager.Settings()  # type: ignore
-        self.display_var: Callable = self.manager.Display()  # type: ignore
+        self.display_var: Display = Display()
         self.display_process: Process = Process(
-            target=self.display, args=[self.settings_var]
+            target=self.display, args=[self.display_var, self.settings_var]
         )
         self.world_process: Process = Process(
             target=self.world, args=[self.settings_var]
         )
 
-    def display(self, settings: Settings) -> None:
+    def display(self, display: Display, settings: Settings) -> None:
         """
         Main display process.
 
